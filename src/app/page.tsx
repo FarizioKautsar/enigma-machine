@@ -12,8 +12,6 @@ export default function Home() {
   const [count, setCount] = useState(0);
   const [plugboard, setPlugboard] = useState<PlugboardType>({});
 
-  console.log(plugboard);
-
   function handleKeyUp() {
     setCount((prev) => prev + 1);
   }
@@ -35,12 +33,12 @@ export default function Home() {
   return (
     <main>
       <div className="container mx-auto">
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 mb-4">
           <AlphabetRotorSelect {...register("rotorA")} />
           <AlphabetRotorSelect {...register("rotorB")} />
           <AlphabetRotorSelect {...register("rotorC")} />
         </div>
-        <LightUpKeyboard onKeyUp={handleKeyUp} />
+        <LightUpKeyboard onKeyUp={handleKeyUp} plugboard={plugboard} />
         <div className="mt-4"></div>
         <Plugboard onChange={handleChangePlugboard} plugboard={plugboard}/>
       </div>

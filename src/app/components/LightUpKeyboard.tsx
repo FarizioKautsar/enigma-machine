@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
+import { PlugboardType } from "../types/Plugboard";
 
 export const keys = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -10,15 +11,22 @@ export const keys = [
 export default function LightUpKeyboard({
   onKeyDown,
   onKeyUp,
+  plugboard,
 }: {
   onKeyDown?: (event?: KeyboardEvent) => any;
   onKeyUp?: () => any;
+  plugboard: PlugboardType;
 }) {
+  const allOriginKeys = Object.keys(plugboard);
+  const allTargetKeys = Object.values(plugboard).map(({ target }) => target);
   const [pressedKey, setPressedKey] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      setPressedKey(event.key);
+      const originKeyIdx = allOriginKeys.findIndex((k) => k === event.key)
+      const targetKeyIdx = allTargetKeys.findIndex((k) => k === event.key)
+      const key = allOriginKeys[targetKeyIdx] || allTargetKeys[originKeyIdx];
+      setPressedKey(key || event.key);
       if (onKeyDown) onKeyDown(event);
     };
 
@@ -35,7 +43,7 @@ export default function LightUpKeyboard({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [plugboard]);
 
   return (
     <div className="flex flex-col items-center space-y-2">
