@@ -1,27 +1,52 @@
 "use client";
-import Image from "next/image";
 import AlphabetRotorSelect from "./components/AlphabetRotorSelect";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import LightUpKeyboard from "./components/LightUpKeyboard";
 import { useState } from "react";
 import Plugboard from "./components/Plugboard";
 import { PlugboardType } from "./types/Plugboard";
+import Button from "./components/Button";
 
 export default function Home() {
-  const { register, watch } = useForm();
-  const [count, setCount] = useState(0);
+  const { register, watch, setValue, control, getValues } = useForm({
+    defaultValues: {
+      rotors: [{ value: 0 }, { value: 0 }, { value: 0 }],
+    },
+  });
+  const { fields, append } = useFieldArray({
+    control,
+    name: "rotors",
+  });
   const [plugboard, setPlugboard] = useState<PlugboardType>({});
 
-  const rotorA = watch("rotorA");
-  const rotorB = watch("rotorB");
-  const rotorC = watch("rotorC");
+  function handleAddRotor() {
+    append({ value: 0 });
+  }
 
-  console.log("rotorA", rotorA);
-  console.log("rotorB", rotorB);
-  console.log("rotorC", rotorC);
+  function handleIncrement() {
+    const values = getValues('rotors').map((rotor) => rotor.value);
+
+    // Increment the first rotor
+    values[0] += 1;
+
+    // Check for multiple of 26 and increment the next rotor
+    for (let i = 0; i < values.length - 1; i++) {
+      if (values[i] % 26 === 0 && values[i] !== 0) {
+        values[i + 1] += 1;
+        values[i] = 0; // Reset the current rotor
+      } else {
+        break;
+      }
+    }
+
+    // Update the form values
+    values.forEach((value, index) => {
+      setValue(`rotors.${index}.value`, value);
+    });
+  }
 
   function handleKeyUp() {
-    setCount((prev) => prev + 1);
+    handleIncrement();
   }
 
   function handleAddPlug(
@@ -50,9 +75,15 @@ export default function Home() {
     <main>
       <div className="container mx-auto">
         <div className="flex justify-center gap-4 mb-4">
-          <AlphabetRotorSelect {...register("rotorA")} defaultValue="a" />
-          <AlphabetRotorSelect {...register("rotorB")} defaultValue="a" />
-          <AlphabetRotorSelect {...register("rotorC")} defaultValue="a" />
+          {fields.map((rotor, rIdx) => (
+            <AlphabetRotorSelect
+              key={rIdx}
+              {...register(`rotors.${rIdx}.value`, { valueAsNumber: true })}
+              value={watch(`rotors.${rIdx}.value`) % 26}
+              defaultValue={"0"}
+            />
+          ))}
+          <Button onClick={handleAddRotor}>+</Button>
         </div>
         <LightUpKeyboard onKeyUp={handleKeyUp} plugboard={plugboard} />
         <div className="mt-4"></div>
