@@ -17,15 +17,15 @@ export default function LightUpKeyboard({
   onKeyUp?: () => any;
   plugboard: PlugboardType;
 }) {
-  const allOriginKeys = Object.keys(plugboard);
-  const allTargetKeys = Object.values(plugboard).map(({ target }) => target);
+  const originKeys = Object.keys(plugboard);
+  const targetKeys = Object.values(plugboard).map(({ target }) => target);
   const [pressedKey, setPressedKey] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const originKeyIdx = allOriginKeys.findIndex((k) => k === event.key)
-      const targetKeyIdx = allTargetKeys.findIndex((k) => k === event.key)
-      const key = allOriginKeys[targetKeyIdx] || allTargetKeys[originKeyIdx];
+      const originKeyIdx = originKeys.findIndex((k) => k === event.key)
+      const targetKeyIdx = targetKeys.findIndex((k) => k === event.key)
+      const key = originKeys[targetKeyIdx] || targetKeys[originKeyIdx];
       setPressedKey(key || event.key);
       if (onKeyDown) onKeyDown(event);
     };
@@ -43,7 +43,7 @@ export default function LightUpKeyboard({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [plugboard]);
+  }, [originKeys, targetKeys, onKeyDown, onKeyUp, plugboard]);
 
   return (
     <div className="flex flex-col items-center space-y-2">
