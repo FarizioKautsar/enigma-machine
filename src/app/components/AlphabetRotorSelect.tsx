@@ -1,13 +1,14 @@
 import { SelectHTMLAttributes, forwardRef } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
+export const alphabet = Array.from({ length: 26 }, (_, i) =>
+  String.fromCharCode(65 + i)
+);
+
 const AlphabetRotorSelect = forwardRef<
   HTMLSelectElement,
   UseFormRegisterReturn & SelectHTMLAttributes<HTMLSelectElement>
 >(({ ...rest }, ref) => {
-  const alphabet = Array.from({ length: 26 }, (_, i) =>
-    String.fromCharCode(65 + i)
-  );
   return (
     <div>
       <select

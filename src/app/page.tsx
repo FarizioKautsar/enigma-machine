@@ -18,13 +18,14 @@ export default function Home() {
     name: "rotors",
   });
   const [plugboard, setPlugboard] = useState<PlugboardType>({});
+  const [reflector, setReflector] = useState<{ [origin: string]: string }>({});
 
   function handleAddRotor() {
     append({ value: 0 });
   }
 
   function handleIncrement() {
-    const values = getValues('rotors').map((rotor) => rotor.value);
+    const values = getValues("rotors").map((rotor) => rotor.value);
 
     // Increment the first rotor
     values[0] += 1;
@@ -71,21 +72,28 @@ export default function Home() {
     });
   }
 
+  const rotorOffsets = watch("rotors").map((rotor) => rotor.value);
+
   return (
     <main>
-      <div className="container mx-auto">
+      <div className="container mx-auto mt-4">
         <div className="flex justify-center gap-4 mb-4">
           {fields.map((rotor, rIdx) => (
-            <AlphabetRotorSelect
-              key={rIdx}
-              {...register(`rotors.${rIdx}.value`, { valueAsNumber: true })}
-              value={watch(`rotors.${rIdx}.value`) % 26}
-              defaultValue={"0"}
-            />
+            <div key={rIdx} className="flex flex-col items-center">
+              <AlphabetRotorSelect
+                {...register(`rotors.${rIdx}.value`, { valueAsNumber: true })}
+                value={watch(`rotors.${rIdx}.value`) % 26}
+                defaultValue={"0"}
+              />
+            </div>
           ))}
           <Button onClick={handleAddRotor}>+</Button>
         </div>
-        <LightUpKeyboard onKeyUp={handleKeyUp} plugboard={plugboard} />
+        <LightUpKeyboard
+          onKeyUp={handleKeyUp}
+          plugboard={plugboard}
+          rotorOffsets={rotorOffsets}
+        />
         <div className="mt-4"></div>
         <Plugboard
           onAddPlug={handleAddPlug}
